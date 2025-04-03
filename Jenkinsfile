@@ -1,3 +1,3 @@
-@Library('jenkins-shared-library-examples') _
+@Library('jenkins-shared-library-examples@main') _
 
 ciPipeline()
