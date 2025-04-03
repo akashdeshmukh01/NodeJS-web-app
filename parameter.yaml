@@ -1,0 +1,14 @@
+sonarqube:
+  projectKey: "node-app"
+  sources: "."
+  hostUrl: "http://13.219.14.205:9000"
+  authToken: "sqp_f2fd0497b0bb15474f6eb7d24c53f77d6432f831"
+
+
+trivy:
+  severity: "HIGH,CRITICAL"
+  ignoreUnfixed: true
+
+zap:
+  targetUrl: "http://your-app-url"
+  riskThreshold: "high"
