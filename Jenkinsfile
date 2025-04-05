@@ -6,13 +6,16 @@ pipeline {
     stages {
         stage('Fetch Terraform Output JSON') {
             steps {
-                copyArtifacts(
-                    projectName: 'terraform-infra-pipeline',
-                    selector: buildSelector(class: 'StatusBuildSelector'),
-                    filter: 'tf_outputs.json',
-                    target: 'terraform-data',
-                    flatten: true
-                )
+                script {
+                    step([
+                        $class: 'CopyArtifact',
+                        projectName: 'terraform-infra-pipeline',
+                        filter: 'tf_outputs.json',
+                        target: 'terraform-data',
+                        flatten: true,
+                        selector: [$class: 'StatusBuildSelector']
+                    ])
+                }
             }
         }
 
