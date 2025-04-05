@@ -27,4 +27,13 @@ pipeline {
             }
         }
     }
+
+    post {
+        success {
+            echo "CI pipeline completed successfully!"
+        }
+        failure {
+            echo "CI pipeline failed."
+        }
+    }
 }
