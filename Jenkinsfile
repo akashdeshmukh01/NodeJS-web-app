@@ -13,7 +13,7 @@ pipeline {
             flatten: true
         )
     }
-}
+
 
         stage('CI Pipeline') {
             steps {
