@@ -3,17 +3,17 @@
 pipeline {
     agent any
 
-    stages {
-        stage('Fetch Terraform Outputs') {
-            steps {
-                copyArtifacts(
-                    projectName: 'terraform-infra-pipeline',
-                    selector: lastSuccessful(),
-                    filter: 'tf_outputs.json',
-                    target: 'terraform-data' // store in subfolder
-                )
-            }
-        }
+    stage('Fetch Terraform Output JSON') {
+    steps {
+        copyArtifacts(
+            projectName: 'terraform-infra-pipeline',
+            selector: [$class: 'LastSuccessfulBuildSelector'],
+            filter: 'tf_outputs.json',
+            target: '.',
+            flatten: true
+        )
+    }
+}
 
         stage('CI Pipeline') {
             steps {
