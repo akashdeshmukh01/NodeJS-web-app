@@ -3,37 +3,30 @@
 pipeline {
     agent any
 
+    parameters {
+        booleanParam(name: 'RUN_SONARQUBE', defaultValue: true, description: 'Run SonarQube scan')
+        booleanParam(name: 'RUN_TRIVY', defaultValue: true, description: 'Run Trivy scan')
+    }
+
     stages {
-        stage('Fetch Terraform Output JSON') {
+        stage('Fetch Terraform Output') {
             steps {
-                script {
-                    step([
-                        $class: 'CopyArtifact',
-                        projectName: 'terraform-infra-pipeline',
-                        filter: 'tf_outputs.json',
-                        target: 'terraform-data',
-                        flatten: true,
-                        selector: [$class: 'StatusBuildSelector']
-                    ])
-                }
+                copyArtifacts(
+                    projectName: 'terraform-infra-pipeline',
+                    selector: lastSuccessful(),
+                    filter: 'tf_outputs.json',
+                    target: 'terraform-data',
+                    flatten: true
+                )
             }
         }
 
-        stage('CI Pipeline') {
+        stage('Run CI Pipeline') {
             steps {
                 script {
                     ciPipeline(terraformOutputFile: 'terraform-data/tf_outputs.json')
                 }
             }
-        }
-    }
-
-    post {
-        success {
-            echo "CI pipeline completed successfully!"
-        }
-        failure {
-            echo "CI pipeline failed."
         }
     }
 }
