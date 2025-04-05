@@ -8,9 +8,9 @@ pipeline {
             steps {
                 copyArtifacts(
                     projectName: 'terraform-infra-pipeline',
-                    selector: [$class: 'LastSuccessfulBuildSelector'],
+                    selector: buildSelector(class: 'StatusBuildSelector'),
                     filter: 'tf_outputs.json',
-                    target: 'terraform-data', // Optional subfolder
+                    target: 'terraform-data',
                     flatten: true
                 )
             }
