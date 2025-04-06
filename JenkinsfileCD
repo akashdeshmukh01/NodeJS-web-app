@@ -17,7 +17,7 @@ pipeline {
           def tfData = readJSON file: 'tf_outputs.json'
           def ciData = readJSON file: 'image_info.json'
 
-          env.AWS_REGION = tfData.aws_region.value
+          env.AWS_REGION = "us-east-1"
           env.CLUSTER_NAME = tfData.eks_cluster_name.value
           env.IMAGE_NAME = ciData.image
 
