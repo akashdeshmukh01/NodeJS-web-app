@@ -8,8 +8,7 @@ image:
 containerPort: 8085
 
 service:
-  type: NodePort
-  port: 80
+  name: myapp
 
 ingress:
   enabled: true

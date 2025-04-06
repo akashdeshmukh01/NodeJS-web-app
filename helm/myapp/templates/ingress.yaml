@@ -19,3 +19,6 @@ spec:
                 name: {{ include "myapp.fullname" . }}
                 port:
                   number: 80
+backend:
+  service:
+    name: {{ .Values.service.name }}
