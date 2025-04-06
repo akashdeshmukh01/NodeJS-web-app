@@ -1,0 +1,101 @@
+pipeline {
+  agent any
+
+  environment {
+    HELM_RELEASE = 'myapp'
+    NAMESPACE = 'default'
+    NOTIFY_EMAIL = 'devops.akash01@gmail.com'
+  }
+
+  stages {
+    stage('Fetch Terraform & CI Outputs') {
+      steps {
+        copyArtifacts(projectName: 'terraform-pipeline', selector: lastSuccessful())
+        copyArtifacts(projectName: 'ci-pipeline', selector: lastSuccessful())
+
+        script {
+          def tfData = readJSON file: 'tf_outputs.json'
+          def ciData = readJSON file: 'image_info.json'
+
+          env.AWS_REGION = tfData.aws_region.value
+          env.CLUSTER_NAME = tfData.eks_cluster_name.value
+          env.IMAGE_NAME = ciData.image
+
+          echo "Using image: ${env.IMAGE_NAME}"
+          echo "Using EKS Cluster: ${env.CLUSTER_NAME} in Region: ${env.AWS_REGION}"
+        }
+      }
+    }
+
+    stage('Configure Kubeconfig') {
+      steps {
+        sh '''
+          aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
+        '''
+      }
+    }
+
+    stage('Deploy with Helm') {
+      steps {
+        script {
+          try {
+            sh """
+              helm upgrade --install ${env.HELM_RELEASE} ./helm/myapp \
+                --set image.repository=${env.IMAGE_NAME.split(":")[0]} \
+                --set image.tag=${env.IMAGE_NAME.split(":")[1]} \
+                --namespace ${env.NAMESPACE}
+            """
+            echo "Helm deployment succeeded."
+          } catch (err) {
+            echo "Helm deployment failed: ${err}"
+            echo "Attempting rollback to previous release..."
+            sh "helm rollback ${env.HELM_RELEASE}"
+            error("Deployment failed and was rolled back.")
+          }
+        }
+      }
+    }
+
+    stage('Test Helm Release') {
+      steps {
+        script {
+          try {
+            sh "helm test ${env.HELM_RELEASE} --timeout 60s"
+            echo "Helm test passed."
+          } catch (err) {
+            echo "Helm test failed. Rolling back..."
+            sh "helm rollback ${env.HELM_RELEASE}"
+            error("Helm test failed and rollback triggered.")
+          }
+        }
+      }
+    }
+  }
+
+  post {
+    success {
+      mail to: "${env.NOTIFY_EMAIL}",
+           subject: "Jenkins CD Pipeline: Deployment Successful",
+           body: """
+Deployment completed successfully!
+
+EKS Cluster: ${env.CLUSTER_NAME}
+Region: ${env.AWS_REGION}
+Image: ${env.IMAGE_NAME}
+"""
+    }
+    failure {
+      mail to: "${env.NOTIFY_EMAIL}",
+           subject: "Jenkins CD Pipeline: Deployment Failed",
+           body: """
+Deployment failed and rollback (if any) was triggered.
+
+Please check the Jenkins console for details.
+
+EKS Cluster: ${env.CLUSTER_NAME}
+Region: ${env.AWS_REGION}
+Image: ${env.IMAGE_NAME}
+"""
+    }
+  }
+}
