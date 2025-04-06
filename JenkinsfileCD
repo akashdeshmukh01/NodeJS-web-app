@@ -72,7 +72,7 @@ pipeline {
     }
   }
 
-  post {
+  /*post {
     success {
       mail to: "${env.NOTIFY_EMAIL}",
            subject: "Jenkins CD Pipeline: Deployment Successful",
@@ -97,5 +97,5 @@ Region: ${env.AWS_REGION}
 Image: ${env.IMAGE_NAME}
 """
     }
-  }
+  }*/
 }
