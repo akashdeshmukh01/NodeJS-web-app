@@ -5,11 +5,12 @@ image:
   tag: latest
   pullPolicy: IfNotPresent
 
+containerPort: 8085
+
 service:
   type: ClusterIP
   port: 3000
-
-containerPort: 3000
+  targetPort: 8085
 
 ingress:
   enabled: true
