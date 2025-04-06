@@ -9,6 +9,8 @@ containerPort: 8085
 
 service:
   name: myapp
+  type: NodePort
+  port: 80
 
 ingress:
   enabled: true
