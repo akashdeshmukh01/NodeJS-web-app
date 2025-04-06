@@ -11,7 +11,7 @@ pipeline {
     stage('Fetch Terraform & CI Outputs') {
       steps {
         copyArtifacts(projectName: 'Terraform-Infra-Pipeline', selector: lastSuccessful())
-        copyArtifacts(projectName: 'Demo-POC/master', selector: lastSuccessful())
+        copyArtifacts(projectName: 'NodeApp - CI/master', selector: lastSuccessful())
 
         script {
           def tfData = readJSON file: 'tf_outputs.json'
