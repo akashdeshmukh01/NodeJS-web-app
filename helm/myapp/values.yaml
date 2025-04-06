@@ -8,18 +8,9 @@ image:
 containerPort: 8085
 
 service:
-  type: ClusterIP
-  port: 3000
-  targetPort: 8085
+  type: NodePort
+  port: 80
+  targetPort: 8080
 
 ingress:
-  enabled: true
-  className: "nginx"
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-  hosts:
-    - host: myapp.dev.com
-      paths:
-        - path: /
-          pathType: Prefix
-  tls: [] # we’ll add TLS later
+  enabled: false
