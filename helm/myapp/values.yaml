@@ -9,7 +9,7 @@ containerPort: 8085
 
 service:
   name: myapp
-  type: NodePort
+  type: ClusterIP
   port: 80
 
 ingress:
