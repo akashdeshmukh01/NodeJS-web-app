@@ -11,13 +11,16 @@ pipeline {
     stages {
         stage('Fetch Terraform Output') {
             steps {
-                copyArtifacts(
-                    projectName: 'Terraform-Infra-Pipeline', // Capitalization must match exactly
-                    selector: [$class: 'LastSuccessfulBuildSelector'], // ✅ Corrected selector
-                    filter: 'tf_outputs.json',
-                    target: 'terraform-data',
-                    flatten: true
-                )
+                script {
+                    step([
+                        $class: 'CopyArtifact',
+                        projectName: 'Terraform-Infra-Pipeline',
+                        filter: 'tf_outputs.json',
+                        target: 'terraform-data',
+                        flatten: true,
+                        selector: [$class: 'StatusBuildSelector', stable: false]
+                    ])
+                }
             }
         }
 
