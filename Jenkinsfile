@@ -13,7 +13,7 @@ pipeline {
             steps {
                 copyArtifacts(
                     projectName: 'Terraform-Infra-Pipeline', // Capitalization must match exactly
-                    selector: latestSuccessful(),
+                    selector: [$class: 'LastSuccessfulBuildSelector'], // ✅ Corrected selector
                     filter: 'tf_outputs.json',
                     target: 'terraform-data',
                     flatten: true
