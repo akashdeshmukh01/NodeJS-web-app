@@ -9,7 +9,7 @@ pipeline {
     }
 
     stages {
-      /*  stage('Fetch Terraform Output') {
+        stage('Fetch Terraform Output') {
             steps {
                 copyArtifacts(
                     projectName: 'terraform-infra-pipeline',
@@ -19,7 +19,7 @@ pipeline {
                     flatten: true
                 )
             }
-        } */
+        } 
 
         stage('Run CI Pipeline') {
             steps {
