@@ -12,7 +12,7 @@ pipeline {
         stage('Fetch Terraform Output') {
             steps {
                 copyArtifacts(
-                    projectName: 'terraform-infra-pipeline',
+                    projectName: 'Terraform-Infra-Pipeline', // Capitalization must match exactly
                     selector: latestSuccessful(),
                     filter: 'tf_outputs.json',
                     target: 'terraform-data',
