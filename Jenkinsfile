@@ -13,13 +13,13 @@ pipeline {
             steps {
                 copyArtifacts(
                     projectName: 'terraform-infra-pipeline',
-                    selector: lastSuccessful(),
+                    selector: latestSuccessful(),
                     filter: 'tf_outputs.json',
                     target: 'terraform-data',
                     flatten: true
                 )
             }
-        } 
+        }
 
         stage('Run CI Pipeline') {
             steps {
